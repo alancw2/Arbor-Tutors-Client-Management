@@ -1,0 +1,12 @@
+{
+    "clients": [
+    {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "johndoe@email.com",
+        "phone": "555-123-4567",
+        "subject": "Math",
+        "total_hours": 2.5
+    }
+]
+}
