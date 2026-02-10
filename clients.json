@@ -6,7 +6,9 @@
         "email": "johndoe@email.com",
         "phone": "555-123-4567",
         "subject": "Math",
-        "total_hours": 2.5
+        "hours_per_week": 1,
+        "total_hours": 2.5,
+        "class_name": "Client"
     }
 ]
 }
