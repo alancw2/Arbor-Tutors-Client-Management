@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Tutor Log Autofill",
+  "version": "0.1.0",
+  "description": "Autofill Tutor Log and persist client totals.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.arbortutors.com/*"],
+  "content_scripts": [
+    {   
+      "matches": ["https://www.arbortutors.com/tutor-log*"],
+      "js": ["arbor_script.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
