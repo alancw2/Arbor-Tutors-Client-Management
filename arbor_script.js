@@ -44,8 +44,9 @@ var tutorLastName = "Ward";
 var tutorEmail = "alanward@example.com";
 
 //temporary client info when necessary, remove once json functioanlity is done
-var clientParentPhoneNumber = "123-456-7890";
-var seperatedParentNumber = clientParentPhoneNumber.split("-");
+var client = new Client("John", "Doe", "johndoe@email.com", "123-456-7890", 1, "Geometry", 12);
+
+var seperatedParentNumber = client.phone.split("-");
 
 
 //fill out tutor name
@@ -56,9 +57,9 @@ document.getElementById("Field18").value = tutorLastName;
 document.getElementById("Field6").value = tutorEmail;
 
 //student info
-document.getElementById("Field12").value = "John";
-document.getElementById("Field19").value = "Doe";
-document.getElementById("Field3").value = "johndoe@example.com";
+document.getElementById("Field12").value = client.firstName;
+document.getElementById("Field19").value = client.lastName;
+document.getElementById("Field3").value = client.email;
 document.getElementById("Field23").value = seperatedParentNumber[0];
 document.getElementById("Field23-1").value = seperatedParentNumber[1];
 document.getElementById("Field23-2").value = seperatedParentNumber[2];
@@ -68,6 +69,11 @@ var today = new Date();
 document.getElementById("Field9-1").value = today.getMonth() + 1;
 document.getElementById("Field9-2").value = today.getDate();
 document.getElementById("Field9").value = today.getFullYear();
+
+document.getElementById("Field7").value = client.hrsPerWeek;
+document.getElementById("Field16").value = client.subject;
+
+document.getElementById("Field14").value = client.totalHrs + hrsPerWeek;
 
 
 
