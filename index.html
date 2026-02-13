@@ -1,32 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Entry</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Entry</title>
 </head>
-<body>
-    <h1>Client Entry</h1>
-    <p>Enter Client info: </p>
-    <form>
-        <label for="first_name">
-            First name:
-            <input type="text" id="first_name" name="first_name">
-        </label><br>
-        <label for="last_name">
-            Last Name:
-            <input type="text" id="last_name" name="last_name">
-        </label><br>
-        <label for="client_email: ">
-            Client Email:
-            <input type="text" id = "email">
-        </label><br>
-        <label for="parent_number: ">
-            Parent Phone Number:
-            <input type="text" id = "phone">
-        </label><br>
 
-        <button>Submit</button>
-    </form> 
+<body>
+  <h1>Client Entry</h1>
+  <p>Enter client info:</p>
+
+  <form id="client_info_form">
+    <label>
+      First Name:
+      <input type="text" id="first_name" required>
+    </label>
+    <br><br>
+
+    <label>
+      Last Name:
+      <input type="text" id="last_name" required>
+    </label>
+    <br><br>
+
+    <label>
+      Client Email:
+      <input type="email" id="email" required>
+    </label>
+    <br><br>
+
+    <label>
+      Parent Phone Number:
+      <input type="text" id="phone" required>
+    </label>
+    <br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script src="form_reader.js"></script>
 </body>
 </html>
