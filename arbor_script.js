@@ -1,3 +1,12 @@
+/**
+ * arbor_script.js
+ * Content script for Wufoo/Arbor tutor log pages.
+ * - Loads the "selected client" from chrome.storage.local (set by your popup/options UI)
+ * - Autofills the Wufoo form
+ * - Live-recomputes total hours as session length changes
+ * - On submit: increments total_hours in storage, then submits the form
+ */
+
 console.log("Tutor Log Autofill script injected!");
 
 const STORAGE_KEY = "clients_db_v1";
@@ -41,7 +50,7 @@ class Client {
   }
 }
 
-// ------------------ storage helpers ------------------
+// ------------------ Storage helpers ------------------
 async function loadDB() {
   const result = await chrome.storage.local.get([STORAGE_KEY]);
   const db = result[STORAGE_KEY];
@@ -65,6 +74,10 @@ async function getSelectedClient() {
   return await getClientByEmail(email);
 }
 
+/**
+ * Increment total_hours for a client and persist.
+ * sessionHours is the number of hours for THIS session.
+ */
 async function addSessionHours(email, sessionHours) {
   const db = await loadDB();
   const idx = db.clients.findIndex(c => c.email === email);
@@ -90,8 +103,10 @@ function waitForId(id, timeoutMs = 15000) {
     const start = Date.now();
     const t = setInterval(() => {
       const el = document.getElementById(id);
-      if (el) { clearInterval(t); resolve(el); }
-      else if (Date.now() - start > timeoutMs) {
+      if (el) {
+        clearInterval(t);
+        resolve(el);
+      } else if (Date.now() - start > timeoutMs) {
         clearInterval(t);
         reject(new Error("Timed out waiting for #" + id));
       }
@@ -111,12 +126,12 @@ function setValue(id, value) {
   return true;
 }
 
-// ------------------ Tutor info ------------------
-const tutorName = "Alan";
-const tutorLastName = "Ward";
-const tutorEmail = "alanward@example.com";
+// ------------------ Tutor info (ship blanks; user can set in UI later) ------------------
+const tutorName = "";
+const tutorLastName = "";
+const tutorEmail = "";
 
-// ------------------ Autofill ------------------
+// ------------------ Autofill logic ------------------
 function fillFormFromClient(client) {
   const parts = String(client.phone || "").split("-");
 
@@ -145,7 +160,7 @@ function fillFormFromClient(client) {
   setValue("Field7", client.hrsPerWeek);
   setValue("Field16", client.subject);
 
-  // total hours (display what it would become AFTER this session)
+  // total hours display (what total would become after this session)
   const sessionHours = Number(document.getElementById("Field7")?.value);
   const computedTotal =
     (Number(client.totalHrs) || 0) + (Number.isFinite(sessionHours) ? sessionHours : 0);
@@ -165,17 +180,33 @@ function attachRecomputeTotalHandler(client) {
   });
 }
 
+/**
+ * Persist hours BEFORE submit navigates away.
+ * Prevents double-increment by guarding with a flag.
+ */
 function attachPersistOnSubmit(client) {
   const form = document.querySelector("form");
   if (!form) return;
 
+  let saving = false;
+
   form.addEventListener("submit", async (e) => {
+    if (saving) return;
+    saving = true;
+
+    e.preventDefault(); // stop immediate navigation
+
     try {
       const sessionHours = Number(document.getElementById("Field7")?.value);
       const newTotal = await addSessionHours(client.email, sessionHours);
-      document.getElementById("Field14").value = newTotal;
+
+      // ensure submitted value matches persisted value
+      setValue("Field14", newTotal);
+
+      // submit only after saving
+      form.submit();
     } catch (err) {
-      e.preventDefault();
+      saving = false;
       alert("Could not save tutoring hours:\n" + err.message);
     }
   });
@@ -183,17 +214,21 @@ function attachPersistOnSubmit(client) {
 
 // ------------------ bootstrap ------------------
 (async function main() {
-  // Wait for Wufoo to exist
-  await waitForId("Field11");
+  try {
+    // Wait for Wufoo to exist
+    await waitForId("Field11");
 
-  // Load the selected client set from your entry page
-  const client = await getSelectedClient();
-  if (!client) {
-    console.warn("No selected client set. Open your client entry page and set one.");
-    return;
+    // Load the selected client set from your entry page
+    const client = await getSelectedClient();
+    if (!client) {
+      console.warn("No selected client set. Open your client entry page and set one.");
+      return;
+    }
+
+    fillFormFromClient(client);
+    attachRecomputeTotalHandler(client);
+    attachPersistOnSubmit(client);
+  } catch (err) {
+    console.error("Autofill bootstrap failed:", err);
   }
-
-  fillFormFromClient(client);
-  attachRecomputeTotalHandler(client);
-  attachPersistOnSubmit(client);
 })();
