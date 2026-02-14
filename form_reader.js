@@ -98,6 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load selected dropdown client into the form
   $("load_btn").addEventListener("click", async () => {
+    //window.location.reload(); 
     const email = $("client_select").value;
     if (!email) return;
 
@@ -113,6 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Set dropdown client as the selected client for autofill
   $("set_selected_btn").addEventListener("click", async () => {
+    chrome.tabs.reload();
     const email = $("client_select").value;
     if (!email) {
       msg.textContent = "Pick a client first.";
