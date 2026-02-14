@@ -8,6 +8,10 @@
     "https://www.arbortutors.com/*",
     "https://arbortutors.wufoo.com/*"
   ],
+  "action": {
+    "default_title": "Tutor Log Clients",
+    "default_popup": "index.html"
+  },
   "content_scripts": [
     {
       "matches": [
