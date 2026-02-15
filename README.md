@@ -13,7 +13,7 @@ This project was built to reduce manual typing, improve consistency, and automat
 - **Auto-compute total hours** based on previous total + current session length
 - **Auto-increment and persist total hours** when the form is submitted
 - **Client selector UI** (popup) for choosing which student to autofill
-- **Client information import/export functionality allowing client data transfer between devices.
+- **Client information** import/export functionality allowing client data transfer between devices.
 
 ---
 
