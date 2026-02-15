@@ -20,9 +20,16 @@
     <label>Total hours: <input id="totalHrs" type="number" step="0.25" min="0" /></label><br><br>
 
     <button type="submit">Save</button>
+    <button type="button" id="remove_client_btn">Remove Client</button>
   </form>
 
   <hr>
+  <h2>Backup</h2>
+  <button id="export_btn" type = "button">Export clients.json</button>
+  <label style="display:block; margin-top: 10px;">
+    Import clients.json: <input id="import_file" type="file" accept="application/json"/>
+  </label>
+  <p id="backup_msg"></p>
 
   <h2>Saved clients</h2>
   <select id="client_select">
