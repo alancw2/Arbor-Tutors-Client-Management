@@ -189,27 +189,51 @@ function attachPersistOnSubmit(client) {
   if (!form) return;
 
   let saving = false;
+  let resubmitting = false;
 
-  form.addEventListener("submit", async (e) => {
-    if (saving) return;
-    saving = true;
+  form.addEventListener(
+    "submit",
+    async (e) => {
+      // If we manually called form.submit(), do not intercept again
+      if (resubmitting) return;
 
-    e.preventDefault(); // stop immediate navigation
+      // Avoid double-submit spam
+      if (saving) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+      saving = true;
 
-    try {
-      const sessionHours = Number(document.getElementById("Field7")?.value);
-      const newTotal = await addSessionHours(client.email, sessionHours);
+      // Stop Wufoo navigation until we finish saving
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-      // ensure submitted value matches persisted value
-      setValue("Field14", newTotal);
+      try {
+        const sessionHours = Number(document.getElementById("Field7")?.value);
 
-      // submit only after saving
-      form.submit();
-    } catch (err) {
-      saving = false;
-      alert("Could not save tutoring hours:\n" + err.message);
-    }
-  });
+        // Ask background.js to do the storage write safely
+        const resp = await chrome.runtime.sendMessage({
+          type: "ADD_SESSION_HOURS",
+          email: client.email,
+          sessionHours
+        });
+
+        if (!resp?.ok) throw new Error(resp?.error || "Failed to persist hours");
+
+        // Ensure the submitted total matches what we saved
+        setValue("Field14", resp.newTotal);
+
+        // Submit only after saving
+        resubmitting = true;
+        form.submit();
+      } catch (err) {
+        saving = false;
+        alert("Could not save tutoring hours:\n" + err.message);
+      }
+    },
+    true // capture phase helps beat Wufoo handlers
+  );
 }
 
 // ------------------ bootstrap ------------------

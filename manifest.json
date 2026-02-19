@@ -6,8 +6,13 @@
   "permissions": ["storage"],
   "host_permissions": [
     "https://www.arbortutors.com/*",
-    "https://arbortutors.wufoo.com/*"
+    "https://arbortutors.wufoo.com/*",
+    "https://*.wufoo.com/*"
+
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "Tutor Log Clients",
     "default_popup": "index.html"
@@ -15,12 +20,13 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.arbortutors.com/tutor-log*",
-        "https://arbortutors.wufoo.com/embed/*"
+        "https://arbortutors.wufoo.com/*",
+        "https://*.wufoo.com/*"
+
       ],
-      "js": ["arbor_script.js"],
-      "run_at": "document_idle",
-      "all_frames": true
+      "js": ["arbor_script.js", "form_reader.js"],
+      "all_frames": true,
+      "run_at": "document_start"
     }
   ]
 }
